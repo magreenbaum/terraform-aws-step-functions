@@ -44,6 +44,12 @@ variable "role_arn" {
   default     = ""
 }
 
+variable "publish" {
+  description = "Set to true to publish a version of the state machine during creation."
+  type        = bool
+  default     = false
+}
+
 variable "tags" {
   description = "Maps of tags to assign to the Step Function"
   type        = map(string)
@@ -64,6 +70,12 @@ variable "type" {
 variable "sfn_state_machine_timeouts" {
   description = "Create, update, and delete timeout configurations for the step function."
   type        = map(string)
+  default     = {}
+}
+
+variable "aliases" {
+  description = "Map of aliases and their configurations to create"
+  type        = map(any)
   default     = {}
 }
 

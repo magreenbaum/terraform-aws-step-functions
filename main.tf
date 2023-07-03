@@ -19,6 +19,7 @@ resource "aws_sfn_state_machine" "this" {
 
   role_arn   = var.use_existing_role ? var.role_arn : aws_iam_role.this[0].arn
   definition = var.definition
+  publish    = var.publish
 
   dynamic "logging_configuration" {
     for_each = local.enable_logging ? [true] : []
@@ -46,6 +47,21 @@ resource "aws_sfn_state_machine" "this" {
   }
 
   tags = merge({ Name = var.name }, var.tags)
+}
+
+resource "aws_sfn_alias" "this" {
+  for_each = { for k, v in var.aliases : k => v if var.create }
+
+  name        = each.key
+  description = try(each.value.description, null)
+
+  dynamic "routing_configuration" {
+    for_each = each.value.routing_configuration
+    content {
+      state_machine_version_arn = try(routing_configuration.value.sfn_version_arn, null) != null ? routing_configuration.value.sfn_version_arn : aws_sfn_state_machine.this[0].state_machine_version_arn
+      weight                    = routing_configuration.value.weight
+    }
+  }
 }
 
 ###########

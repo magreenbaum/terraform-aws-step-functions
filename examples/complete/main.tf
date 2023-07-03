@@ -2,7 +2,6 @@ provider "aws" {
   region = "eu-west-1"
 
   # Make it faster by skipping something
-  skip_get_ec2_platforms      = true
   skip_metadata_api_check     = true
   skip_region_validation      = true
   skip_credentials_validation = true
@@ -22,7 +21,7 @@ locals {
     },
     "World": {
       "Type": "Pass",
-      "Result": "World",
+      "Result": "GoodBye",
       "End": true
     }
   }
@@ -39,6 +38,16 @@ module "step_function" {
 
   definition = local.definition_template
 
+  publish = true
+
+  aliases = {
+    latest = {
+      routing_configuration = [{
+        weight = 100
+      }]
+    }
+  }
+
   logging_configuration = {
     include_execution_data = true
     level                  = "ALL"
@@ -50,16 +59,16 @@ module "step_function" {
       events = true
     }
 
-    dynamodb = {
-      dynamodb = ["arn:aws:dynamodb:eu-west-1:052212379155:table/Test"]
-    }
-
-    athena_StartQueryExecution_Sync = {
-      athena        = ["arn:aws:athena:eu-west-1:123456789012:something1:test1"]
-      glue          = ["arn:aws:glue:eu-west-1:123456789012:something2:test1"]
-      s3            = true # options: true (use default value from `aws_service_policies`) or provide a list of ARNs
-      lakeformation = ["arn:aws:lakeformation:eu-west-1:123456789012:something3:test1"]
-    }
+    #    dynamodb = {
+    #      dynamodb = ["arn:aws:dynamodb:eu-west-1:052212379155:table/Test"]
+    #    }
+    #
+    #    athena_StartQueryExecution_Sync = {
+    #      athena        = ["arn:aws:athena:eu-west-1:123456789012:something1:test1"]
+    #      glue          = ["arn:aws:glue:eu-west-1:123456789012:something2:test1"]
+    #      s3            = true # options: true (use default value from `aws_service_policies`) or provide a list of ARNs
+    #      lakeformation = ["arn:aws:lakeformation:eu-west-1:123456789012:something3:test1"]
+    #    }
 
     lambda = {
       lambda = [

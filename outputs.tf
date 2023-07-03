@@ -19,6 +19,11 @@ output "state_machine_status" {
   value       = try(aws_sfn_state_machine.this[0].status, "")
 }
 
+output "state_machine_version_arn" {
+  description = "The version arn to use of the Step Function"
+  value       = try(aws_sfn_state_machine.this[0].state_machine_version_arn, "")
+}
+
 # IAM Role
 output "role_arn" {
   description = "The ARN of the IAM role created for the Step Function"
